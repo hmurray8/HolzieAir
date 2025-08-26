@@ -6,11 +6,29 @@ const mobileMenuLinks = document.querySelectorAll('.mobile-menu a');
 mobileMenuToggle.addEventListener('click', function() {
     mobileMenu.classList.toggle('active');
     
-    // Animate hamburger menu
+    // Animate hamburger menu to perfect X
     const spans = this.querySelectorAll('span');
-    spans[0].style.transform = mobileMenu.classList.contains('active') ? 'rotate(45deg) translate(5px, 5px)' : '';
-    spans[1].style.opacity = mobileMenu.classList.contains('active') ? '0' : '1';
-    spans[2].style.transform = mobileMenu.classList.contains('active') ? 'rotate(-45deg) translate(5px, -5px)' : '';
+    if (mobileMenu.classList.contains('active')) {
+        // Form X - both lines meet in the middle
+        spans[0].style.top = '9px';
+        spans[0].style.transform = 'rotate(45deg)';
+        
+        spans[1].style.opacity = '0';
+        spans[1].style.transform = 'scale(0)';
+        
+        spans[2].style.top = '9px';
+        spans[2].style.transform = 'rotate(-45deg)';
+    } else {
+        // Reset to hamburger with exact positions
+        spans[0].style.top = '0px';
+        spans[0].style.transform = 'rotate(0)';
+        
+        spans[1].style.opacity = '1';
+        spans[1].style.transform = 'scale(1)';
+        
+        spans[2].style.top = '18px';
+        spans[2].style.transform = 'rotate(0)';
+    }
 });
 
 // Close mobile menu when link is clicked
@@ -18,9 +36,15 @@ mobileMenuLinks.forEach(link => {
     link.addEventListener('click', () => {
         mobileMenu.classList.remove('active');
         const spans = mobileMenuToggle.querySelectorAll('span');
-        spans[0].style.transform = '';
+        // Reset to hamburger with exact positions
+        spans[0].style.top = '0px';
+        spans[0].style.transform = 'rotate(0)';
+        
         spans[1].style.opacity = '1';
-        spans[2].style.transform = '';
+        spans[1].style.transform = 'scale(1)';
+        
+        spans[2].style.top = '18px';
+        spans[2].style.transform = 'rotate(0)';
     });
 });
 
