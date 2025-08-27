@@ -70,24 +70,43 @@ navbar.style.background = 'transparent';
 navbar.style.backdropFilter = 'none';
 navbar.style.webkitBackdropFilter = 'none';
 
-// Form handling with FormSubmit.co
+// Form handling with FormSubmit.co AJAX
 const contactForm = document.getElementById('contactForm');
 
 contactForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
     // Show loading state
     const submitButton = this.querySelector('.submit-button');
     const originalText = submitButton.textContent;
     submitButton.textContent = 'Sending...';
     submitButton.disabled = true;
     
-    // Let the form submit naturally to FormSubmit.co
-    // The form will redirect to the thank you page automatically
-    
-    // Reset button state after a delay (in case of errors)
-    setTimeout(() => {
+    // Submit form via AJAX
+    fetch(this.action, {
+        method: 'POST',
+        body: new FormData(this),
+        headers: {
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            // Success
+            showNotification('Message sent successfully! We\'ll get back to you soon.', 'success');
+            this.reset();
+        } else {
+            // Error
+            showNotification('Oops! There was a problem sending your message. Please try again.', 'error');
+        }
+    })
+    .catch(error => {
+        showNotification('Oops! There was a problem sending your message. Please try again.', 'error');
+    })
+    .finally(() => {
         submitButton.textContent = originalText;
         submitButton.disabled = false;
-    }, 3000);
+    });
 });
 
 // Notification system
@@ -269,18 +288,31 @@ inputs.forEach(input => {
     });
 });
 
-// Phone number formatting
+// Australian phone number formatting
 const phoneInput = document.querySelector('input[name="phone"]');
 if (phoneInput) {
     phoneInput.addEventListener('input', function(e) {
         let value = e.target.value.replace(/\D/g, '');
         if (value.length > 0) {
-            if (value.length <= 2) {
-                value = `(${value}`;
-            } else if (value.length <= 6) {
-                value = `(${value.slice(0, 2)}) ${value.slice(2)}`;
+            // Format for Australian mobile (04XX XXX XXX) or landline (0X XXXX XXXX)
+            if (value.startsWith('04')) {
+                // Mobile format: 0429 155 887
+                if (value.length <= 4) {
+                    value = value;
+                } else if (value.length <= 7) {
+                    value = `${value.slice(0, 4)} ${value.slice(4)}`;
+                } else {
+                    value = `${value.slice(0, 4)} ${value.slice(4, 7)} ${value.slice(7, 10)}`;
+                }
             } else {
-                value = `(${value.slice(0, 2)}) ${value.slice(2, 6)}-${value.slice(6, 10)}`;
+                // Landline format: 03 9555 5555
+                if (value.length <= 2) {
+                    value = value;
+                } else if (value.length <= 6) {
+                    value = `${value.slice(0, 2)} ${value.slice(2)}`;
+                } else {
+                    value = `${value.slice(0, 2)} ${value.slice(2, 6)} ${value.slice(6, 10)}`;
+                }
             }
         }
         e.target.value = value;
