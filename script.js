@@ -289,35 +289,37 @@ inputs.forEach(input => {
 });
 
 // Australian phone number formatting
-const phoneInput = document.querySelector('input[name="phone"]');
-if (phoneInput) {
-    phoneInput.addEventListener('input', function(e) {
-        let value = e.target.value.replace(/\D/g, '');
-        if (value.length > 0) {
-            // Format for Australian mobile (04XX XXX XXX) or landline (0X XXXX XXXX)
-            if (value.startsWith('04')) {
-                // Mobile format: 0429 155 887
-                if (value.length <= 4) {
-                    value = value;
-                } else if (value.length <= 7) {
-                    value = `${value.slice(0, 4)} ${value.slice(4)}`;
+document.addEventListener('DOMContentLoaded', function() {
+    const phoneInput = document.querySelector('input[name="phone"]');
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 0) {
+                // Format for Australian mobile (04XX XXX XXX) or landline (0X XXXX XXXX)
+                if (value.startsWith('04')) {
+                    // Mobile format: 0429 155 887
+                    if (value.length <= 4) {
+                        value = value;
+                    } else if (value.length <= 7) {
+                        value = `${value.slice(0, 4)} ${value.slice(4)}`;
+                    } else {
+                        value = `${value.slice(0, 4)} ${value.slice(4, 7)} ${value.slice(7, 10)}`;
+                    }
                 } else {
-                    value = `${value.slice(0, 4)} ${value.slice(4, 7)} ${value.slice(7, 10)}`;
-                }
-            } else {
-                // Landline format: 03 9555 5555
-                if (value.length <= 2) {
-                    value = value;
-                } else if (value.length <= 6) {
-                    value = `${value.slice(0, 2)} ${value.slice(2)}`;
-                } else {
-                    value = `${value.slice(0, 2)} ${value.slice(2, 6)} ${value.slice(6, 10)}`;
+                    // Landline format: 03 9555 5555
+                    if (value.length <= 2) {
+                        value = value;
+                    } else if (value.length <= 6) {
+                        value = `${value.slice(0, 2)} ${value.slice(2)}`;
+                    } else {
+                        value = `${value.slice(0, 2)} ${value.slice(2, 6)} ${value.slice(6, 10)}`;
+                    }
                 }
             }
-        }
-        e.target.value = value;
-    });
-}
+            e.target.value = value;
+        });
+    }
+});
 
 // Testimonial carousel (if more testimonials are added)
 let currentTestimonial = 0;
