@@ -70,35 +70,24 @@ navbar.style.background = 'transparent';
 navbar.style.backdropFilter = 'none';
 navbar.style.webkitBackdropFilter = 'none';
 
-// Form handling
+// Form handling with FormSubmit.co
 const contactForm = document.getElementById('contactForm');
 
 contactForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    // Get form data
-    const formData = new FormData(this);
-    const data = {};
-    formData.forEach((value, key) => {
-        data[key] = value;
-    });
-    
     // Show loading state
     const submitButton = this.querySelector('.submit-button');
     const originalText = submitButton.textContent;
     submitButton.textContent = 'Sending...';
     submitButton.disabled = true;
     
-    // Simulate form submission (replace with actual API call)
+    // Let the form submit naturally to FormSubmit.co
+    // The form will redirect to the thank you page automatically
+    
+    // Reset button state after a delay (in case of errors)
     setTimeout(() => {
-        // Success message
-        showNotification('Message sent successfully! We\'ll get back to you soon.', 'success');
-        
-        // Reset form
-        this.reset();
         submitButton.textContent = originalText;
         submitButton.disabled = false;
-    }, 1500);
+    }, 3000);
 });
 
 // Notification system
