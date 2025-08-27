@@ -288,12 +288,20 @@ inputs.forEach(input => {
     });
 });
 
-// Australian phone number formatting
-document.addEventListener('DOMContentLoaded', function() {
+// Wait for page to fully load then add Australian phone formatting
+window.addEventListener('load', function() {
+    // Remove any existing listeners first
     const phoneInput = document.querySelector('input[name="phone"]');
     if (phoneInput) {
-        phoneInput.addEventListener('input', function(e) {
+        // Clone to remove all event listeners
+        const newPhoneInput = phoneInput.cloneNode(true);
+        phoneInput.parentNode.replaceChild(newPhoneInput, phoneInput);
+        
+        // Add Australian formatting
+        newPhoneInput.addEventListener('input', function(e) {
+            // Remove all non-digits
             let value = e.target.value.replace(/\D/g, '');
+            
             if (value.length > 0) {
                 // Format for Australian mobile (04XX XXX XXX) or landline (0X XXXX XXXX)
                 if (value.startsWith('04')) {
