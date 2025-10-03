@@ -176,7 +176,7 @@ body {
 /* Hero Section */
 .hero {
     background: linear-gradient(135deg, rgba(10, 22, 40, 0.7), rgba(255, 107, 53, 0.3)),
-                url('assburgers 2.jpg');
+                url('banner.jpg');
     background-size: cover;
     background-position: center;
     min-height: 100vh;
