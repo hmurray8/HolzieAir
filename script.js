@@ -70,38 +70,28 @@ navbar.style.background = 'transparent';
 navbar.style.backdropFilter = 'none';
 navbar.style.webkitBackdropFilter = 'none';
 
-// Form handling with FormSubmit.co AJAX and fallback
+// Form handling with FormSubmit.co AJAX
 const contactForm = document.getElementById('contactForm');
 
 contactForm.addEventListener('submit', function(e) {
     e.preventDefault();
-
+    
     // Show loading state
     const submitButton = this.querySelector('.submit-button');
     const originalText = submitButton.textContent;
     submitButton.textContent = 'Sending...';
     submitButton.disabled = true;
-
+    
     // Submit form via AJAX
-    const formData = new FormData(this);
-    const data = Object.fromEntries(formData);
-
     fetch(this.action, {
         method: 'POST',
-        body: JSON.stringify(data),
+        body: new FormData(this),
         headers: {
-            'Content-Type': 'application/json',
             'Accept': 'application/json'
         }
     })
     .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();
-    })
-    .then(data => {
-        if (data.success === 'true' || data.success === true) {
+        if (response.ok) {
             // Success
             showNotification('Message sent successfully! We\'ll get back to you soon.', 'success');
             this.reset();
@@ -109,27 +99,13 @@ contactForm.addEventListener('submit', function(e) {
             // Error
             showNotification('Oops! There was a problem sending your message. Please try again.', 'error');
         }
-        submitButton.textContent = originalText;
-        submitButton.disabled = false;
     })
     .catch(error => {
-        console.error('Form submission error:', error);
-        console.log('AJAX failed, falling back to traditional submission...');
-
-        // Fallback: Use traditional form submission (no AJAX)
-        // Change action to non-AJAX endpoint temporarily
-        const originalAction = this.action;
-        this.action = 'https://formsubmit.co/admin@holzieaircon.com';
-
-        // Add redirect parameter to come back to your site
-        const redirectInput = document.createElement('input');
-        redirectInput.type = 'hidden';
-        redirectInput.name = '_next';
-        redirectInput.value = 'https://holzieaircon.com/?message=sent';
-        this.appendChild(redirectInput);
-
-        // Submit the form traditionally
-        this.submit();
+        showNotification('Oops! There was a problem sending your message. Please try again.', 'error');
+    })
+    .finally(() => {
+        submitButton.textContent = originalText;
+        submitButton.disabled = false;
     });
 });
 
