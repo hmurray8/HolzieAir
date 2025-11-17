@@ -70,31 +70,38 @@ navbar.style.background = 'transparent';
 navbar.style.backdropFilter = 'none';
 navbar.style.webkitBackdropFilter = 'none';
 
-// Form handling with FormSubmit.co AJAX
+// Form handling with FormSubmit.co AJAX and fallback
 const contactForm = document.getElementById('contactForm');
 
 contactForm.addEventListener('submit', function(e) {
     e.preventDefault();
-    
+
     // Show loading state
     const submitButton = this.querySelector('.submit-button');
     const originalText = submitButton.textContent;
     submitButton.textContent = 'Sending...';
     submitButton.disabled = true;
-    
+
     // Submit form via AJAX
     const formData = new FormData(this);
+    const data = Object.fromEntries(formData);
 
     fetch(this.action, {
         method: 'POST',
-        body: formData,
+        body: JSON.stringify(data),
         headers: {
+            'Content-Type': 'application/json',
             'Accept': 'application/json'
-        },
-        mode: 'cors'
+        }
     })
     .then(response => {
-        if (response.ok) {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success === 'true' || data.success === true) {
             // Success
             showNotification('Message sent successfully! We\'ll get back to you soon.', 'success');
             this.reset();
@@ -102,13 +109,27 @@ contactForm.addEventListener('submit', function(e) {
             // Error
             showNotification('Oops! There was a problem sending your message. Please try again.', 'error');
         }
-    })
-    .catch(error => {
-        showNotification('Oops! There was a problem sending your message. Please try again.', 'error');
-    })
-    .finally(() => {
         submitButton.textContent = originalText;
         submitButton.disabled = false;
+    })
+    .catch(error => {
+        console.error('Form submission error:', error);
+        console.log('AJAX failed, falling back to traditional submission...');
+
+        // Fallback: Use traditional form submission (no AJAX)
+        // Change action to non-AJAX endpoint temporarily
+        const originalAction = this.action;
+        this.action = 'https://formsubmit.co/admin@holzieaircon.com';
+
+        // Add redirect parameter to come back to your site
+        const redirectInput = document.createElement('input');
+        redirectInput.type = 'hidden';
+        redirectInput.name = '_next';
+        redirectInput.value = 'https://holzieaircon.com/?message=sent';
+        this.appendChild(redirectInput);
+
+        // Submit the form traditionally
+        this.submit();
     });
 });
 
