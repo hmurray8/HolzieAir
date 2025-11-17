@@ -83,12 +83,15 @@ contactForm.addEventListener('submit', function(e) {
     submitButton.disabled = true;
     
     // Submit form via AJAX
+    const formData = new FormData(this);
+
     fetch(this.action, {
         method: 'POST',
-        body: new FormData(this),
+        body: formData,
         headers: {
             'Accept': 'application/json'
-        }
+        },
+        mode: 'cors'
     })
     .then(response => {
         if (response.ok) {
