@@ -72,10 +72,21 @@ navbar.style.webkitBackdropFilter = 'none';
 
 // Form handling with FormSubmit.co AJAX
 const contactForm = document.getElementById('contactForm');
+const formLoadedAt = Date.now();
 
 contactForm.addEventListener('submit', function(e) {
     e.preventDefault();
-    
+
+    // Bot checks: the hidden honeypot was filled in, or the form was sent
+    // faster than a person could type it. Pretend it worked so bots don't retry.
+    const honeypot = this.querySelector('input[name="_honey"]');
+    const tooFast = Date.now() - formLoadedAt < 3000;
+    if ((honeypot && honeypot.value) || tooFast) {
+        showNotification('Message sent successfully! We\'ll get back to you soon.', 'success');
+        this.reset();
+        return;
+    }
+
     // Show loading state
     const submitButton = this.querySelector('.submit-button');
     const originalText = submitButton.textContent;
